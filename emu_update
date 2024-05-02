@@ -1,0 +1,144 @@
+#!/bin/bash
+# vim:ft=sh
+#downloads a list of emulator appimages and updates them too when run again
+
+emu_path="$HOME/downloads/emu"
+cd /tmp || exit 1
+
+printf "updating Snes9x: "
+release=$(curl -sL https://github.com/snes9xgit/snes9x/releases | grep /snes9xgit/snes9x/releases/tag | head -n1 | cut -d'"' -f6 | cut -d/ -f6)
+if ! find "$emu_path" | grep -q Snes9x-"$release"
+then
+  wget -q https://github.com/snes9xgit/snes9x/releases/download/"$release"/Snes9x-"$release"-x86_64.AppImage
+  mv -f Snes9x* "$emu_path"
+  printf "\033[0;32mupdated Snes9x\033[0m\n"
+else
+  printf "\033[0;31mSnes9x already at newest version\033[0m\n"
+fi
+
+printf "updating Mupen64: "
+release=$(curl -sL https://github.com/Rosalie241/RMG/releases | grep /Rosalie241/RMG/releases/tag | head -n1 | cut -d'"' -f6 | cut -d/ -f6)
+if ! find "$emu_path" | grep -q RMG-Portable-Linux64-"$release"
+then
+  wget -q https://github.com/Rosalie241/RMG/releases/download/"$release"/RMG-Portable-Linux64-"$release".AppImage
+  mv -f RMG-Portable* "$emu_path"
+  printf "\033[0;32mupdated Mupen64\033[0m\n"
+else
+  printf "\033[0;31mMupen64 already at newest version\033[0m\n"
+fi
+
+printf "updating mGBA: "
+release=$(curl -sL https://github.com/mgba-emu/mgba/releases | grep /mgba-emu/mgba/releases/tag | head -n1 | cut -d'"' -f6 | cut -d/ -f6)
+if ! find "$emu_path" | grep -q mGBA-"$release"
+then
+  wget -q https://github.com/mgba-emu/mgba/releases/download/"$release"/mGBA-"$release"-appimage-x64.AppImage
+  mv -f mGBA* "$emu_path"
+  printf "\033[0;32mupdated mGBA\033[0m\n"
+else
+  printf "\033[0;31mmGBA already at newest version\033[0m\n"
+fi
+
+printf "updating citra: "
+if ! find "$emu_path" | grep -q citra
+then
+  # echo -e "downloading citra from archive.org which can be slow at times...\nsince it's the last release of citra it's only downloading it once\nplease be patient"
+  wget -q https://archive.org/download/citra-latest-stuff/Nightly%20build%20%2B%20source%20-%200ff3440/citra-linux-appimage-20240303-0ff3440.tar.gz
+  tar xzf citra*.tar.gz --directory="$emu_path" --strip-components=1 --wildcards '*/citra-qt.AppImage'
+  rm citra*
+  printf "\033[0;32mupdated citra\033[0m\n"
+else
+  printf "\033[0;31mcitra already at newest version\033[0m\n"
+fi
+
+printf "updating Dolphin: "
+wget -q https://github.com/lucasmz1/Dolphin_emu_Appimage/releases/download/continuous-stable/Dolphin_Emulator-x86_64.AppImage
+if ! find "$emu_path" | grep -q Dolphin
+then
+  mv -f Dolphin* "$emu_path"
+  printf "\033[0;32mupdated Dolphin\033[0m\n"
+else
+  downloaded_hash=$(sha256sum Dolphin* | awk '{print $1}')
+  existing_hash=$(sha256sum "$emu_path"/Dolphin* | awk '{print $1}')
+  if [ "$downloaded_hash" == "$existing_hash" ]; then
+    rm Dolphin*
+    printf "\033[0;31mDolphin already at newest version\033[0m\n"
+  else
+    mv -f Dolphin* "$emu_path"
+    printf "\033[0;32mupdated Dolphin\033[0m\n"
+  fi
+fi
+
+printf "updating Cemu: "
+release=$(curl -sL https://github.com/cemu-project/Cemu/releases | grep /cemu-project/Cemu/releases/tag | head -n1 | cut -d'"' -f6 | cut -d/ -f6 | sed 's|v||')
+if ! find "$emu_path" | grep -q "$release"
+then
+  wget -q https://github.com/cemu-project/Cemu/releases/download/v"$release"/Cemu-"$release"-x86_64.AppImage
+  mv -f Cemu* "$emu_path"
+  printf "\033[0;32mupdated Cemu\033[0m\n"
+else
+  printf "\033[0;31mCemu already at newest version\033[0m\n"
+fi
+
+printf "updating DuckStation: "
+wget -q https://github.com/stenzek/duckstation/releases/download/preview/DuckStation-x64.AppImage
+if ! find "$emu_path" | grep -q DuckStation
+then
+  mv -f DuckStation* "$emu_path"
+  printf "\033[0;32mupdated DuckStation\033[0m\n"
+else
+  downloaded_hash=$(sha256sum DuckStation* | awk '{print $1}')
+  existing_hash=$(sha256sum "$emu_path"/DuckStation* | awk '{print $1}')
+  if [ "$downloaded_hash" == "$existing_hash" ]; then
+    rm DuckStation*
+    printf "\033[0;31mDuckStation already at newest version\033[0m\n"
+  else
+    mv -f DuckStation* "$emu_path"
+    printf "\033[0;32mupdated DuckStation\033[0m\n"
+  fi
+fi
+
+printf "updating pcsx2: "
+release=$(curl -sL https://github.com/PCSX2/pcsx2/releases | grep /PCSX2/pcsx2/releases/tag | head -n1 | cut -d'"' -f6 | cut -d/ -f6)
+if ! find "$emu_path" | grep -q "$release"
+then
+  wget -q https://github.com/PCSX2/pcsx2/releases/download/"$release"/pcsx2-"$release"-linux-appimage-x64-Qt.AppImage
+  rm "$emu_path"/pcsx2*
+  mv -f pcsx2* "$emu_path"
+  printf "\033[0;32mupdated pcsx2\033[0m\n"
+else
+  printf "\033[0;31mpcsx2 already at newest version\033[0m\n"
+fi
+
+printf "updating flycast: "
+release=$(curl -sL https://github.com/flyinghead/flycast/releases | grep /flyinghead/flycast/releases/tag | head -n1 | cut -d'"' -f6 | cut -d/ -f6)
+if ! find "$emu_path" | grep -q "$release"
+then
+  wget -q https://github.com/flyinghead/flycast/releases/download/"$release"/flycast-x86_64.AppImage
+  mv -f flycast* "$emu_path"/flycast-"$release"-x86_64.AppImage
+  printf "\033[0;32mupdated flycast\033[0m\n"
+else
+  printf "\033[0;31mflycast already at newest version\033[0m\n"
+fi
+
+printf "updating PPSSPP: "
+git clone -q https://gitlab.com/Miguel-hrvs/ppsspp-appimage
+if ! find "$emu_path" | grep -q PPSSPP
+then
+  mv -f ppsspp-appimage/builds/*.AppImage "$emu_path"
+  rm -rf ppsspp-appimage
+  printf "\033[0;32mupdated PPSSPP\033[0m\n"
+else
+  downloaded_hash=$(sha256sum ppsspp-appimage/builds/PPSSPP* | awk '{print $1}')
+  existing_hash=$(sha256sum "$emu_path"/PPSSPP* | awk '{print $1}')
+  if [ "$downloaded_hash" == "$existing_hash" ]; then
+    rm -rf ppsspp-appimage
+    printf "\033[0;31mPPSSPP already at newest version\033[0m\n"
+  else
+    mv -f ppsspp-appimage/builds/*.appimage "$emu_path"
+    rm -rf ppsspp-appimage
+    printf "\033[0;32mupdated PPSSPP\033[0m\n"
+  fi
+fi
+
+chmod u+x "$emu_path"/*.AppImage
+printf "\n\033[0;32mall done\033[0m\n"
