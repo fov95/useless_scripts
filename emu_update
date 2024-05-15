@@ -72,6 +72,7 @@ printf "updating Cemu: "
 release=$(curl -sL https://github.com/cemu-project/Cemu/releases | grep /cemu-project/Cemu/releases/tag | head -n1 | cut -d'"' -f6 | cut -d/ -f6 | sed 's|v||')
 if ! find "$emu_path" | grep -q "$release"
 then
+  rm "$emu_path"/Cemu*
   wget -q https://github.com/cemu-project/Cemu/releases/download/v"$release"/Cemu-"$release"-x86_64.AppImage
   mv -f Cemu* "$emu_path"
   printf "\033[0;32mupdated Cemu\033[0m\n"
@@ -110,7 +111,7 @@ else
 fi
 
 printf "updating flycast: "
-release=$(curl -sL https://github.com/flyinghead/flycast/releases | grep /flyinghead/flycast/releases/tag | head -n1 | cut -d'"' -f6 | cut -d/ -f6)
+release=$(curl -sL https://github.com/flyinghead/flycast/releases | grep /flyinghead/flycast/releases/tag | grep -vi ios | head -n1 | cut -d'"' -f6 | cut -d/ -f6)
 if ! find "$emu_path" | grep -q "$release"
 then
   wget -q https://github.com/flyinghead/flycast/releases/download/"$release"/flycast-x86_64.AppImage
