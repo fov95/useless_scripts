@@ -2,7 +2,8 @@
 # vim:ft=sh
 #downloads a list of emulator appimages and updates them too when run again
 
-emu_path="$HOME/downloads/emu"
+# emu_path="$HOME/downloads/emu"
+emu_path="/mnt/data/emulation/emu"
 cd /tmp || exit 1
 
 printf "updating Snes9x: "
@@ -20,6 +21,7 @@ printf "updating Mupen64: "
 release=$(curl -sL https://github.com/Rosalie241/RMG/releases | grep /Rosalie241/RMG/releases/tag | head -n1 | cut -d'"' -f6 | cut -d/ -f6)
 if ! find "$emu_path" | grep -q RMG-Portable-Linux64-"$release"
 then
+  rm "$emu_path"/RMG*
   wget -q https://github.com/Rosalie241/RMG/releases/download/"$release"/RMG-Portable-Linux64-"$release".AppImage
   mv -f RMG-Portable* "$emu_path"
   printf "\033[0;32mupdated Mupen64\033[0m\n"
