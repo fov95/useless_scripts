@@ -10,6 +10,7 @@ printf "updating Snes9x: "
 release=$(curl -sL https://github.com/snes9xgit/snes9x/releases | grep /snes9xgit/snes9x/releases/tag | head -n1 | cut -d'"' -f6 | cut -d/ -f6)
 if ! find "$emu_path" | grep -q Snes9x-"$release"
 then
+  rm "$emu_path"/Snes9x*
   wget -q https://github.com/snes9xgit/snes9x/releases/download/"$release"/Snes9x-"$release"-x86_64.AppImage
   mv -f Snes9x* "$emu_path"
   printf "\033[0;32mupdated Snes9x\033[0m\n"
