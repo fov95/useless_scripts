@@ -1,0 +1,38 @@
+#!/bin/bash
+# vim:ft=sh
+
+#downloads a list of appimages and updates them too when run again
+
+appimage_path="$HOME/downloads/appimage"
+cd /tmp || exit 1
+
+printf "updating FreeTube: "
+release=$(curl -sL https://github.com/FreeTubeApp/FreeTube/releases | grep /FreeTubeApp/FreeTube/releases/tag | head -n1 | cut -d'"' -f6 | cut -d/ -f6 | sed -e 's|v||' -e 's|-beta||')
+if ! find "$appimage_path" | grep -q freetube_"$release"
+then
+  rm -f "$appimage_path"/freetube*
+  wget -q https://github.com/FreeTubeApp/FreeTube/releases/download/v"$release"-beta/freetube_"$release"_amd64.AppImage
+  mv -f freetube* "$appimage_path"
+  printf "\033[0;32mupdated FreeTube\033[0m\n"
+else
+  printf "\033[0;31mFreeTube already at newest version\033[0m\n"
+fi
+
+
+printf "updating GIMP: "
+release_data=$(curl -s "https://api.github.com/repos/ivan-hc/GIMP-appimage/releases/tags/continuous-stable")
+appimage_url=$(echo "$release_data" | jq -r '.assets[] | select(.name | endswith(".AppImage")).browser_download_url')
+appimage_name=$(basename "$appimage_url")
+if ! find "$appimage_path" | grep -q "$appimage_name"
+then
+  rm -f "$appimage_path"/GNU-Image*
+  wget -q "$appimage_url"
+  mv -f GNU-Image* "$appimage_path"
+  printf "\033[0;32mupdated GIMP\033[0m\n"
+else
+  printf "\033[0;31mGIMP already at newest version\033[0m\n"
+fi
+
+
+chmod u+x "$appimage_path"/*.AppImage
+printf "\n\033[0;32mall done\033[0m\n"
