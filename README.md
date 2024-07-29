@@ -15,4 +15,6 @@
 ##### downloads appimages and updates them too when run again - currently supported programs:  
   - FreeTube
   - GIMP
+  - Balena Etcher
+  - NexusMods.App
 ---
