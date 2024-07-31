@@ -60,5 +60,19 @@ else
   printf "\033[0;31mNexusMods.App already at newest version\033[0m\n"
 fi
 
+printf "updating ProtonUp-Qt: "
+release_data=$(curl -s "https://api.github.com/repos/DavidoTek/ProtonUp-Qt/releases/latest")
+appimage_url=$(echo "$release_data" | jq -r '.assets[] | select(.name | endswith(".AppImage")).browser_download_url')
+appimage_name=$(basename "$appimage_url")
+if ! find "$appimage_path" | grep -q "$appimage_name"
+then
+  rm -f "$appimage_path"/ProtonUp*
+  wget -q "$appimage_url"
+  mv -f ProtonUp* "$appimage_path"
+  printf "\033[0;32mupdated ProtonUp-Qt\033[0m\n"
+else
+  printf "\033[0;31mProtonUp-Qt already at newest version\033[0m\n"
+fi
+
 chmod u+x "$appimage_path"/*.AppImage
 printf "\n\033[0;32mall done\033[0m\n"
