@@ -17,4 +17,5 @@
   - GIMP
   - Balena Etcher
   - NexusMods.App
+  - ProtonUp-Qt
 ---
