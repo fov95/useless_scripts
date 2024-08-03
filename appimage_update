@@ -48,16 +48,26 @@ fi
 
 printf "updating NexusMods.App: "
 release_data=$(curl -s "https://api.github.com/repos/Nexus-Mods/NexusMods.App/releases/latest")
-appimage_url=$(echo "$release_data" | jq -r '.assets[] | select(.name | endswith(".AppImage")).browser_download_url')
-appimage_name=$(basename "$appimage_url")
-if ! find "$appimage_path" | grep -q "$appimage_name"
+cleaned_release_data=$(echo "$release_data" | tr -d '\000-\031')
+appimage_url=$(echo "$cleaned_release_data" | jq -r '.assets[] | select(.name | endswith(".AppImage")).browser_download_url')
+# appimage_name=$(basename "$appimage_url")
+wget -q "$appimage_url"
+if ! find "$appimage_path" | grep -q NexusMods
 then
-  rm -f "$appimage_path"/Nexus*
-  wget -q "$appimage_url"
-  mv -f Nexus* "$appimage_path"
+  rm -f "$appimage_path"/NexusMods*
+  mv -f NexusMods* "$appimage_path"
   printf "\033[0;32mupdated NexusMods.App\033[0m\n"
 else
-  printf "\033[0;31mNexusMods.App already at newest version\033[0m\n"
+  downloaded_hash=$(sha256sum NexusMods* | awk '{print $1}')
+  existing_hash=$(sha256sum "$appimage_path"/NexusMods* | awk '{print $1}')
+  if [ "$downloaded_hash" == "$existing_hash" ]; then
+    rm -rf NexusMods*
+    printf "\033[0;31mNexusMods.App already at newest version\033[0m\n"
+  else
+    rm -rf "$appimage_path"/NexusMods*
+    mv -f NexusMods* "$appimage_path"
+    printf "\033[0;32mupdated NexusMods.App\033[0m\n"
+  fi
 fi
 
 printf "updating ProtonUp-Qt: "
@@ -72,6 +82,22 @@ then
   printf "\033[0;32mupdated ProtonUp-Qt\033[0m\n"
 else
   printf "\033[0;31mProtonUp-Qt already at newest version\033[0m\n"
+fi
+
+printf "updating LibreOffice: "
+if ! find "$appimage_path" | grep -q LibreOffice-fresh
+then
+  wget -q -P "$appimage_path" https://appimages.libreitalia.org/LibreOffice-fresh.standard-x86_64.AppImage
+  printf "\033[0;32mupdated LibreOffice\033[0m\n"
+else find "$appimage_path" | grep -q LibreOffice-fresh
+  md5_site=$(curl -sL https://appimages.libreitalia.org/LibreOffice-fresh.standard-x86_64.AppImage.md5 | awk '{print $1}')
+  md5_file=$(md5sum "$appimage_path"/LibreOffice-fresh* | awk '{print $1}')
+  if ! [ "$md5_site" == "$md5_file" ]; then
+    wget -q -O "$appimage_path"/LibreOffice-fresh.standard-x86_64.AppImage https://appimages.libreitalia.org/LibreOffice-fresh.standard-x86_64.AppImage
+    printf "\033[0;32mupdated LibreOffice\033[0m\n"
+  else
+    printf "\033[0;31mLibreOffice already at newest version\033[0m\n"
+  fi
 fi
 
 chmod u+x "$appimage_path"/*.AppImage
