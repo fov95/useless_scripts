@@ -18,4 +18,5 @@
   - Balena Etcher
   - NexusMods.App
   - ProtonUp-Qt
+  - LibreOffice
 ---
