@@ -74,7 +74,7 @@ fi
 
 printf "updating Cemu: "
 release=$(curl -sL https://github.com/cemu-project/Cemu/releases | grep /cemu-project/Cemu/releases/tag | head -n1 | cut -d'"' -f6 | cut -d/ -f6 | sed 's|v||')
-if ! find "$emu_path" | grep -q "$release"
+if ! find "$emu_path" | grep -q Cemu-"$release"
 then
   rm -f "$emu_path"/Cemu*
   wget -q https://github.com/cemu-project/Cemu/releases/download/v"$release"/Cemu-"$release"-x86_64.AppImage
